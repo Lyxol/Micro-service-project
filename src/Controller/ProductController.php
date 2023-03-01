@@ -18,6 +18,7 @@ class ProductController extends AbstractController
         $json = [];
         foreach($productRepository->findAll() as $product){
             $json[] = [
+                "id" => $product->getId(),
                 "name" => $product->getName(),
                 "price"=> $product->getPrice()
             ];
