@@ -111,4 +111,20 @@ class AdminShopController extends AbstractController
             ], 400);
         }
     }
+
+    #[Route('/{id_shop}/products/{id_product}', name: 'app_admin_shop_delete_product', methods: ['DELETE'])]
+    public function deleteProduct(ProductShopRepository $pSR, string $id_shop, string $id_product)
+    {
+        $target = $pSR->findByIdProductAndIdShop($id_product, $id_shop);
+        $last_deleted = [
+            'id_product' => $target->getIdProduct()->getId(),
+            'last_quantity_deleted' => $target->getQuantity()
+        ];
+        if ($target === null)
+            return $this->json([
+                'error' => 'does not exist'
+            ], 404);
+        $pSR->remove($target, true);
+        return $this->json($last_deleted);
+    }
 }
