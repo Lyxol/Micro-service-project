@@ -39,6 +39,32 @@ class ShopRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAll()
+    {
+        return $this->createQueryBuilder('s')
+                    ->orderBy('s.id','ASC')
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function findOneById($val): ?Shop
+    {
+        return $this->createQueryBuilder('s')
+                    ->andWhere('s.id = :val')
+                    ->setParameter('val',$val)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+    }
+
+    public function findOneByAddress($value): ?Shop
+    {
+        return $this->createQueryBuilder('s')
+                    ->andWhere('s.address = :val')
+                    ->setParameter('val',$value)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+    }
+
 //    /**
 //     * @return Shop[] Returns an array of Shop objects
 //     */

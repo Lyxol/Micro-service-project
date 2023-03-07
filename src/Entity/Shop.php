@@ -27,6 +27,9 @@ class Shop
     #[ORM\OneToMany(mappedBy: 'id_shop', targetEntity: ProductShop::class, orphanRemoval: true)]
     private Collection $products;
 
+    #[ORM\Column(length: 255)]
+    private ?string $State = null;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -99,6 +102,18 @@ class Shop
                 $product->setIdShop(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->State;
+    }
+
+    public function setState(string $State): self
+    {
+        $this->State = $State;
 
         return $this;
     }

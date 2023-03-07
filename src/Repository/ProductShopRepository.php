@@ -39,6 +39,17 @@ class ProductShopRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByIdProductAndIdShop($idProduct,$idShop): ?ProductShop
+    {
+        return $this->createQueryBuilder('p')
+                    ->andWhere('p.id_product = :val1')
+                    ->andWhere('p.id_shop = :val2')
+                    ->setParameter('val1',$idProduct)
+                    ->setParameter('val2',$idShop)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+    }
+
 //    /**
 //     * @return ProductShop[] Returns an array of ProductShop objects
 //     */
