@@ -105,6 +105,7 @@ class ShopController extends AbstractController
             $command->setIdCustomer($user);
             $command->setRecupDate($data->recup_date);
             $command->setShop($shop);
+            $cR->save($command, true);
             foreach ($data->shopping_cart as $command_data) {
                 $product = $pR->findById($command_data->id_product);
                 if ($product !== null) {
@@ -115,7 +116,6 @@ class ShopController extends AbstractController
                     $cCR->save($customer_command, true);
                 }
             }
-            $cR->save($command, true);
             return $this->json(
                 $entityToArray->commandArray($command, $pR)
             );
