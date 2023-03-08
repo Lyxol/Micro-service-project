@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ShopRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ShopRepository::class)]
@@ -29,6 +30,12 @@ class Shop
 
     #[ORM\Column(length: 255)]
     private ?string $State = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $open_time = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $closing_time = null;
 
     public function __construct()
     {
@@ -114,6 +121,30 @@ class Shop
     public function setState(string $State): self
     {
         $this->State = $State;
+
+        return $this;
+    }
+
+    public function getOpenTime(): ?\DateTimeInterface
+    {
+        return $this->open_time;
+    }
+
+    public function setOpenTime(\DateTimeInterface $open_time): self
+    {
+        $this->open_time = $open_time;
+
+        return $this;
+    }
+
+    public function getClosingTime(): ?\DateTimeInterface
+    {
+        return $this->closing_time;
+    }
+
+    public function setClosingTime(\DateTimeInterface $closing_time): self
+    {
+        $this->closing_time = $closing_time;
 
         return $this;
     }
