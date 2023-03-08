@@ -26,6 +26,13 @@ class Command
     #[ORM\OneToMany(mappedBy: 'command', targetEntity: CustomerCommand::class, orphanRemoval: true)]
     private Collection $customerCommands;
 
+    #[ORM\ManyToOne(inversedBy: 'commands')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Shop $Shop = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $recup_date = null;
+
     public function __construct()
     {
         $this->customerCommands = new ArrayCollection();
@@ -86,6 +93,30 @@ class Command
                 $customerCommand->setCommand(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getShop(): ?Shop
+    {
+        return $this->Shop;
+    }
+
+    public function setShop(?Shop $Shop): self
+    {
+        $this->Shop = $Shop;
+
+        return $this;
+    }
+
+    public function getRecupDate(): ?string
+    {
+        return $this->recup_date;
+    }
+
+    public function setRecupDate(string $recup_date): self
+    {
+        $this->recup_date = $recup_date;
 
         return $this;
     }

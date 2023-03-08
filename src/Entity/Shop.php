@@ -39,9 +39,13 @@ class Shop
     #[ORM\Column(length: 255)]
     private ?string $closing_time = null;
 
+    #[ORM\OneToMany(mappedBy: 'Shop', targetEntity: Command::class)]
+    private Collection $commands;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
+        $this->commands = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -147,6 +151,36 @@ class Shop
     public function setClosingTime(string $closing_time): self
     {
         $this->closing_time = $closing_time;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Command>
+     */
+    public function getCommands(): Collection
+    {
+        return $this->commands;
+    }
+
+    public function addCommand(Command $command): self
+    {
+        if (!$this->commands->contains($command)) {
+            $this->commands->add($command);
+            $command->setShop($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommand(Command $command): self
+    {
+        if ($this->commands->removeElement($command)) {
+            // set the owning side to null (unless already changed)
+            if ($command->getShop() === $this) {
+                $command->setShop(null);
+            }
+        }
 
         return $this;
     }
