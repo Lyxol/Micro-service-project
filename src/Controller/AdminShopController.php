@@ -9,6 +9,7 @@ use App\Service\EntityToArray;
 use App\Repository\ShopRepository;
 use App\Repository\ProductRepository;
 use App\Repository\ProductShopRepository;
+use DateTime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,6 +46,8 @@ class AdminShopController extends AbstractController
             $shop->setAddress($parameters->address);
             $shop->setPhone($parameters->phone);
             $shop->setState($parameters->state);
+            $shop->setOpenTime($parameters->open_time);
+            $shop->setClosingTime($parameters->closing_time);
             $shopRepository->save($shop, true);
             return $this->json($EntityToArray->shopArray($shop));
         } catch (\Throwable $th) {

@@ -31,11 +31,11 @@ class Shop
     #[ORM\Column(length: 255)]
     private ?string $State = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $open_time = null;
+    #[ORM\Column(length: 255)]
+    private ?string $open_time = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $closing_time = null;
+    #[ORM\Column(length: 255)]
+    private ?string $closing_time = null;
 
     public function __construct()
     {
@@ -125,24 +125,24 @@ class Shop
         return $this;
     }
 
-    public function getOpenTime(): ?\DateTimeInterface
+    public function getOpenTime(): ?string
     {
         return $this->open_time;
     }
 
-    public function setOpenTime(\DateTimeInterface $open_time): self
+    public function setOpenTime(string $open_time): self
     {
         $this->open_time = $open_time;
 
         return $this;
     }
 
-    public function getClosingTime(): ?\DateTimeInterface
+    public function getClosingTime(): ?string
     {
         return $this->closing_time;
     }
 
-    public function setClosingTime(\DateTimeInterface $closing_time): self
+    public function setClosingTime(string $closing_time): self
     {
         $this->closing_time = $closing_time;
 
