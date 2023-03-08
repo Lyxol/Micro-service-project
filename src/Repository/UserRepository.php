@@ -42,6 +42,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
     }
 
+    public function findOneById($value)
+    {
+        return $this->createQueryBuilder('u')
+                    ->andWhere('u.id = :val')
+                    ->setParameter('val',$value)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+    }
+
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */

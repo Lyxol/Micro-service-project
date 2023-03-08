@@ -74,9 +74,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'id_customer', targetEntity: Command::class, orphanRemoval: true)]
     private Collection $commands;
 
+    #[ORM\OneToMany(mappedBy: 'seller', targetEntity: Messages::class, orphanRemoval: true)]
+    private Collection $messages;
+
     public function __construct()
     {
         $this->commands = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -172,6 +176,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($command->getIdCustomer() === $this) {
                 $command->setIdCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Messages>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Messages $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setSeller($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Messages $message): self
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getSeller() === $this) {
+                $message->setSeller(null);
             }
         }
 

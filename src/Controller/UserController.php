@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Messages;
 use App\Entity\User;
 use App\Repository\CommandRepository;
+use App\Repository\MessagesRepository;
 use App\Repository\ProductRepository;
+use App\Repository\UserRepository;
 use App\Service\EntityToArray;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,4 +56,58 @@ class UserController extends AbstractController
             'commands' => $list_command
         ]);
     }
+
+    #[Route('/message', name: 'api_user_send_message', methods: ['POST'])]
+    public function sendMessage(MessagesRepository $mR,UserRepository $uR,Request $request)
+    {
+        $user = $this->getUser();
+        $data = json_decode($request->getContent());
+        $seller = $uR->findOneById($data->id_seller);
+        if($seller === null)
+            return $this->json([
+                'error'=>'seller not found'
+            ],404);
+        if(!in_array('ROLE_SELLER', $seller->getRoles(), true))
+            return $this->json([
+                'error'=>'user is not a seller'
+            ],409);
+        try {
+            $message = new Messages;
+            $message->setMail($user->getEmail());
+            $message->setSeller($seller);
+            $message->setMessage($data->message);
+            $mR->save($message,true);
+            return $this->json([
+                'id'=>$message->getId(),
+                'mail_customer'=>$message->getMail(),
+                'seller'=>[
+                    "id"=> $message->getSeller()->getId(),
+                    "email"=> $message->getSeller()->getEmail(),
+                ],
+                'message'=> $message->getMessage()
+            ]);
+        } catch (\Throwable $th) {
+            return $this->json([
+                'error'=>'bad request'
+            ],400);
+        }
+    }
+
+    #[Route('/message', name: 'api_user_show_message', methods: ['GET'])]
+    public function showMessage()
+    {
+        $user = $this->getUser();
+        $display = [];
+        foreach($user->getMessages() as $message){
+            $display[] = [                
+                'id'=>$message->getId(),
+                'mail_customer'=>$message->getMail(),
+                'message'=> $message->getMessage()
+            ];
+        }
+        return $this->json([
+            'messages'=>$display
+        ]);
+    }
+
 }

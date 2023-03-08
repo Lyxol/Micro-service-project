@@ -147,7 +147,7 @@ class AdminShopController extends AbstractController
         foreach($shop->getCommands() as $command){
             $send = true;
             $user = $command->getIdCustomer();
-            //try {
+            try {
                 $email = (new Email())
                 ->from('shopdeliut@gmail')
                 ->to($user->getEmail())
@@ -155,9 +155,9 @@ class AdminShopController extends AbstractController
                 ->text('Sending emails is fun again!')
                 ->html('<p>See Twig integration for better HTML integration!</p>');
                 $mailer->send($email);   
-            /*} catch (\Throwable $th) {
+            } catch (\Throwable $th) {
                 $send = false;
-            }*/
+            }
             $display[] = [
                 'command_id'=>$command->getId(),
                 'user_id'=>$user->getId(),

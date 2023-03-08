@@ -63,6 +63,9 @@ security:
         - { path: ^/api/shop, roles: ROLE_USER}
         - { path: ^/api/login, roles: PUBLIC_ACCESS}
         - { path: ^/api/admin, roles: ROLE_ADMIN}
+        - { path: ^/api/message, methods: ['POST'], roles: PUBLIC_ACCESS}
+        - { path: ^/api/message, methods: ['GET'], roles: ROLE_SELLER}
+
     role_hierarchy:
         ROLE_SELLER: ROLE_USER
         ROLE_ADMIN: ROLE_SELLER
