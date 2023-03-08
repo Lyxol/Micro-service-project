@@ -3,11 +3,16 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Exception\managementError;
 use App\Repository\UserRepository;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\throwException;
 
 class UserService
 {
@@ -21,12 +26,40 @@ class UserService
 
 public function auth(User $body): array
 {
+    if(
+        is_null($body->getEmail() ?? null)||
+        is_null($body->getPlainPassword() ?? null)
+    ){
+        return [
+            'content' => 'Error.',
+            'exception'=> [
+                'message' => 'empty fields or incorrect data ',
+                'code' => 422,
+            ],
+        ];
+    }
     /** @var User $user */
     $user = $this->userRepository->findOneBy(['email' => $body->getEmail()]);
-//        if (is_null($user)) throw new UserNotFoundApiException();     // renvoier un texte et un code erreur
+        if (is_null($user ?? null)){
+            return [
+                'content' => 'Error.',
+                'exception'=> [
+                    'message' => 'User not found.',
+                    'code' => 404,
+                ],
+            ];
+        }
 
     $isValid = $this->passwordHasher->isPasswordValid($user, $body->getPlainPassword());
-//        if (!$isValid) throw new UserNotValidApiException();
+        if (!$isValid){
+            return [
+                'content' => 'Error.',
+                'exception'=> [
+                    'message' => 'password error.',
+                    'code' => 404,
+                ],
+            ];
+        }
 
     $token = $this->jwtManager->create($user);
     return [

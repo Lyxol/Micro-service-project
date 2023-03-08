@@ -4,11 +4,8 @@ namespace App\Controller;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\User;
-use App\Exception\UserNotFoundApiException;
-use App\Exception\UserNotValidApiException;
 use App\Repository\UserRepository;
 use App\Service\UserService;
-use App\ApiResponse;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
