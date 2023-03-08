@@ -21,13 +21,12 @@ use Symfony\Component\Serializer\SerializerInterface;
 class UserController extends AbstractController
 {
 
-    #[Route('/api/login', name: 'api_user_login', methods: ['POST'], format: 'application/json')]
+    #[Route('/login', name: 'api_user_login', methods: ['POST'], format: 'application/json')]
     public function login(
         Request                     $request,
         SerializerInterface         $serializer,
         UserService                 $userService
-    ): Response
-    {
+    ): Response {
         /** @var User $body */
         $body = $serializer->deserialize(
             $request->getContent(),
@@ -38,7 +37,8 @@ class UserController extends AbstractController
 
         $response = $userService->auth($body);
 
-        return $this->json($response,
+        return $this->json(
+            $response,
             200,
             [],
             ['groups' => ['user']]
