@@ -28,6 +28,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Put(processor: UserPasswordHasher::class),
         new Patch(processor: UserPasswordHasher::class),
         new Delete(),
+        new Post(routeName:"api_user_login", name: "login" )
     ]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -35,14 +36,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['user:login'])]
+    #[Groups(['user:login', 'user'])]
     private ?string $email = null;
 
     #[ORM\Column]
-    private array $roles = [];
+    private array $roles = ['ROLE_USER'];
 
     /**
      * @var string The hashed password
