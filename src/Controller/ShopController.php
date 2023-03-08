@@ -82,8 +82,6 @@ class ShopController extends AbstractController
             'quantity' => $quantity
         ]);
     }
-
-    //TODO : fix display list products
     #[Route('/{id_shop}/command/', name: 'app_shop_make_command', methods: ['POST'])]
     public function makeCommand(
         ShopRepository $sR,
@@ -107,7 +105,6 @@ class ShopController extends AbstractController
             $command->setIdCustomer($user);
             $command->setRecupDate($data->recup_date);
             $command->setShop($shop);
-            $cR->save($command, true);
             foreach ($data->shopping_cart as $command_data) {
                 $product = $pR->findById($command_data->id_product);
                 if ($product !== null) {
@@ -118,6 +115,7 @@ class ShopController extends AbstractController
                     $cCR->save($customer_command, true);
                 }
             }
+            $cR->save($command, true);
             return $this->json(
                 $entityToArray->commandArray($command, $pR)
             );
