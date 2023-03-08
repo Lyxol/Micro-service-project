@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Command;
+use App\Entity\CustomerCommand;
+use App\Repository\CommandRepository;
+use App\Repository\CustomerCommandRepository;
 use App\Repository\ProductRepository;
 use App\Repository\ProductShopRepository;
 use App\Repository\ShopRepository;
@@ -9,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\EntityToArray;
+use DateTime;
 
 #[Route('/shop')]
 class ShopController extends AbstractController
@@ -76,5 +81,50 @@ class ShopController extends AbstractController
             ],
             'quantity' => $quantity
         ]);
+    }
+
+    //TODO : fix display list products
+    #[Route('/{id_shop}/command/', name: 'app_shop_make_command', methods: ['POST'])]
+    public function makeCommand(
+        ShopRepository $sR,
+        CustomerCommandRepository $cCR,
+        CommandRepository $cR,
+        ProductRepository $pR,
+        EntityToArray $entityToArray,
+        Request $request,
+        string $id_shop
+    ) {
+        $user = $this->getUser();
+        $shop = $sR->findOneById($id_shop);
+        if ($shop === null)
+            return $this->json([
+                'error' => 'shop does not exist'
+            ], 404);
+        try {
+            $data = json_decode($request->getContent());
+            $command = new Command;
+            $command->setDateCreated(new DateTime());
+            $command->setIdCustomer($user);
+            $command->setRecupDate($data->recup_date);
+            $command->setShop($shop);
+            $cR->save($command, true);
+            foreach ($data->shopping_cart as $command_data) {
+                $product = $pR->findById($command_data->id_product);
+                if ($product !== null) {
+                    $customer_command = new CustomerCommand;
+                    $customer_command->setCommand($command);
+                    $customer_command->setProducts($product);
+                    $customer_command->setQuantity($command_data->quantity);
+                    $cCR->save($customer_command, true);
+                }
+            }
+            return $this->json(
+                $entityToArray->commandArray($command, $pR)
+            );
+        } catch (\Throwable $th) {
+            return $this->json([
+                'error' => 'bad request'
+            ], 400);
+        }
     }
 }

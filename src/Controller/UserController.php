@@ -2,18 +2,14 @@
 
 namespace App\Controller;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Entity\User;
-use App\Exception\UserNotFoundApiException;
-use App\Exception\UserNotValidApiException;
-use App\Repository\UserRepository;
+use App\Repository\CommandRepository;
+use App\Repository\ProductRepository;
+use App\Service\EntityToArray;
 use App\Service\UserService;
-use App\ApiResponse;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -43,5 +39,18 @@ class UserController extends AbstractController
             [],
             ['groups' => ['user']]
         );
+    }
+
+    #[Route('/commands', name: 'api_user_commands', methods: ['GET'])]
+    public function showCommand(CommandRepository $cR, ProductRepository $pR, EntityToArray $entityToArray)
+    {
+        $user = $this->getUser();
+        $list_command = [];
+        foreach ($cR->findAllByUser($user) as $command) {
+            $list_command[] = $entityToArray->commandArray($command, $pR);
+        }
+        return $this->json([
+            'commands' => $list_command
+        ]);
     }
 }
